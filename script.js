@@ -5,8 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let audioContext;
   let analyser;
   let microphone;
-  let audio = new Audio('hbd.mp3');
-
+  let audio = new Audio("hbd.mp3");
 
   function updateCandleCount() {
     const activeCandles = candles.filter(
@@ -16,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function addCandle(left, top) {
+    if (candles.length >= 1) return; 
     const candle = document.createElement("div");
     candle.className = "candle";
     candle.style.left = left + "px";
@@ -30,7 +30,20 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCandleCount();
   }
 
+  
+  function addCenterCandle() {
+    const candleWidth = 0; 
+    const candleHeight = 150; 
+    const left = (cake.clientWidth - candleWidth) / 2;
+    const top = (cake.clientHeight - candleHeight) / 2;
+    addCandle(left, top);
+  }
+
+  addCenterCandle(); 
+
+  
   cake.addEventListener("click", function (event) {
+    if (candles.length >= 1) return; 
     const rect = cake.getBoundingClientRect();
     const left = event.clientX - rect.left;
     const top = event.clientY - rect.top;
@@ -48,14 +61,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     let average = sum / bufferLength;
 
-    return average > 20; //ETO CHANGEEEEEE
+    return average > 20;
   }
 
   function blowOutCandles() {
     let blownOut = 0;
 
-    // Only check for blowing if there are candles and at least one is not blown out
-    if (candles.length > 0 && candles.some((candle) => !candle.classList.contains("out"))) {
+    if (
+      candles.length > 0 &&
+      candles.some((candle) => !candle.classList.contains("out"))
+    ) {
       if (isBlowing()) {
         candles.forEach((candle) => {
           if (!candle.classList.contains("out") && Math.random() > 0.5) {
@@ -69,18 +84,15 @@ document.addEventListener("DOMContentLoaded", function () {
         updateCandleCount();
       }
 
-      // If all candles are blown out, trigger confetti after a small delay
       if (candles.every((candle) => candle.classList.contains("out"))) {
-        setTimeout(function() {
+        setTimeout(function () {
           triggerConfetti();
-          endlessConfetti(); // Start the endless confetti
+          endlessConfetti();
         }, 200);
         audio.play();
       }
     }
   }
-
-
 
   if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices
@@ -105,16 +117,16 @@ function triggerConfetti() {
   confetti({
     particleCount: 100,
     spread: 70,
-    origin: { y: 0.6 }
+    origin: { y: 0.6 },
   });
 }
 
 function endlessConfetti() {
-  setInterval(function() {
+  setInterval(function () {
     confetti({
       particleCount: 200,
       spread: 90,
-      origin: { y: 0 }
+      origin: { y: 0 },
     });
   }, 1000);
 }
